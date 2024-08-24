@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff; /* White background for the body */
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .card {
+            background-color: #ffffff; /* White background for cards */
+            border: 1px solid #600e0e; /* Accent color border */
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: calc(100% / 5 - 20px); /* Adjust width to fit 5 cards per row with padding */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 180px; /* Max width for smaller cards */
+            height: auto; /* Adjust height automatically */
+        }
+        .card.highlight {
+            border: 2px solid #dcb6b6; /* Lightened accent color for highlight */
+            background-color: #f8e6e6; /* Very light background for highlighted card */
+        }
+        .card .date {
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #600e0e; /* Accent color for date text */
+        }
+        .card .temperature {
+            font-size: 0.9em;
+            margin: 4px 0;
+        }
+        .card .tavg {
+            font-size: 1.1em;
+            color: #600e0e; /* Accent color for TAVG */
+        }
+        .card .tmax {
+            color: #600e0e; /* Accent color for TMAX */
+        }
+        .card .tmin {
+            color: #600e0e; /* Accent color for TMIN */
+        }
+        .go-back {
+            text-decoration: none;
+            color: #600e0e; /* Accent color for 'Go Back' link */
+            font-size: 1em;
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #600e0e; /* Accent color for heading text */
+            text-align: center; /* Center the heading text */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Heading -->
+        <h1>Temperature Predictions for the Week</h1>
+
+        <!-- Cards for the Week -->
+        <div class="card-container">
+            {% for index, row in prediction_results.iterrows() %}
+            <div class="card">
+                <div class="date">{{ row['DATE'].strftime('%d-%m-%Y') }}</div>
+                <div class="temperature tavg">TAVG: {{ row['Predicted TAVG']|round(2) }}°C</div>
+                <div class="temperature tmax">TMAX: {{ row['Predicted TMAX']|round(2) }}°C</div>
+                <div class="temperature tmin">TMIN: {{ row['Predicted TMIN']|round(2) }}°C</div>
+            </div>
+            {% endfor %}
+        </div>
+        <a href="/" class="go-back">Go Back</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var cards = document.querySelectorAll('.card');
+            if (cards.length > 0) {
+                // Highlight the first card
+                cards[0].classList.add('highlight');
+            }
+        });
+    </script>
+</body>
+</html>
