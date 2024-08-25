@@ -73,6 +73,10 @@
             color: #600e0e; /* Accent color for heading text */
             text-align: center; /* Center the heading text */
         }
+        .chart-container {
+            width: 80%;
+            margin: 40px auto;
+        }
     </style>
 </head>
 <body>
@@ -100,9 +104,16 @@
             </div>
             {% endfor %}
         </div>
+
+        <!-- Chart Container -->
+        <div class="chart-container">
+            <canvas id="tempChart"></canvas>
+        </div>
+
         <a href="/" class="go-back">Go Back</a>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var cards = document.querySelectorAll('.card');
@@ -110,6 +121,51 @@
                 // Highlight the first card
                 cards[0].classList.add('highlight');
             }
+
+            // Prepare data for the chart
+            var labels = [{% for index, row in prediction_results.iterrows() %} '{{ row['DATE'].strftime('%d-%m-%Y') }}', {% endfor %}];
+            var data = [{% for index, row in prediction_results.iterrows() %} {{ row['Predicted TAVG'] }}, {% endfor %}];
+
+            // Calculate the minimum temperature and set the y-axis minimum
+            var minTemp = Math.min(...data);
+            var yAxisMin = minTemp - 2; // Start y-axis 5 degrees below the minimum temperature
+
+            // Create the chart
+            var ctx = document.getElementById('tempChart').getContext('2d');
+            var tempChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Predicted TAVG',
+                        data: data,
+                        backgroundColor: 'rgba(96, 14, 14, 0.2)', /* Accent color with transparency */
+                        borderColor: '#600e0e', /* Accent color */
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            },
+                            beginAtZero: false, // Do not start at zero
+                            min: yAxisMin, // Start the y-axis 5 degrees below the minimum temperature
+                            ticks: {
+                                stepSize: 1 // Increase y-axis values by 2
+                            }
+                        }
+                    }
+                }
+            });
         });
     </script>
 </body>
