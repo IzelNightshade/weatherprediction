@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediction Results</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -55,11 +56,10 @@
             font-size: 1.1em;
             color: #600e0e; /* Accent color for TAVG */
         }
-        .card .tmax {
-            color: #600e0e; /* Accent color for TMAX */
-        }
-        .card .tmin {
-            color: #600e0e; /* Accent color for TMIN */
+        .card .weather-icon {
+            font-size: 2em;
+            color: #600e0e; /* Accent color for weather icon */
+            margin: 10px 0;
         }
         .go-back {
             text-decoration: none;
@@ -85,9 +85,18 @@
             {% for index, row in prediction_results.iterrows() %}
             <div class="card">
                 <div class="date">{{ row['DATE'].strftime('%d-%m-%Y') }}</div>
-                <div class="temperature tavg">TAVG: {{ row['Predicted TAVG']|round(2) }}°C</div>
-                <div class="temperature tmax">TMAX: {{ row['Predicted TMAX']|round(2) }}°C</div>
-                <div class="temperature tmin">TMIN: {{ row['Predicted TMIN']|round(2) }}°C</div>
+                <div class="weather-icon">
+                    {% if row['Predicted TAVG'] < 10 %}
+                        <i class="fas fa-snowflake"></i> <!-- Snowflake for cold temperatures -->
+                    {% elif row['Predicted TAVG'] < 20 %}
+                        <i class="fas fa-cloud-sun"></i> <!-- Cloud with sun for cool temperatures -->
+                    {% elif row['Predicted TAVG'] < 40 %}
+                        <i class="fas fa-sun"></i> <!-- Sun for mild temperatures -->
+                    {% else %}
+                        <i class="fas fa-sun"></i> <!-- Sun for hot temperatures (can customize further) -->
+                    {% endif %}
+                </div>
+                <div class="temperature tavg">TAVG: {{ row['Predicted TAVG'] }}°C</div>
             </div>
             {% endfor %}
         </div>
