@@ -3,3 +3,4 @@ pandas==2.0.2
 scikit-learn==1.2.2
 numpy==1.24.4
 wheel
+gunicorn==21.2.0
