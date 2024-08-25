@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediction Results</title>
+    <title>Prediction Results with Snowfall</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
@@ -11,12 +11,15 @@
             background-color: #ffffff; /* White background for the body */
             margin: 0;
             padding: 0;
+            /* Removed overflow: hidden; */
         }
         .container {
             width: 100%;
             margin: 0 auto;
             padding: 20px;
             box-sizing: border-box;
+            position: relative;
+            z-index: 1; /* Ensure content is above the snowfall */
         }
         .card-container {
             display: flex;
@@ -77,6 +80,28 @@
             width: 80%;
             margin: 40px auto;
         }
+
+        /* Snowflake styles */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: #600e0e; /* Accent color for snowflakes */
+            font-size: 1em;
+            pointer-events: none;
+            z-index: 0; /* Behind the content */
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0px);
+            }
+            100% {
+                transform: translateY(100vh); /* Fall down the full height of the viewport */
+            }
+        }
     </style>
 </head>
 <body>
@@ -113,6 +138,9 @@
         <a href="/" class="go-back">Go Back</a>
     </div>
 
+    <!-- Snowflakes -->
+    <div id="snowflakes-container"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -128,7 +156,7 @@
 
             // Calculate the minimum temperature and set the y-axis minimum
             var minTemp = Math.min(...data);
-            var yAxisMin = minTemp - 2; // Start y-axis 5 degrees below the minimum temperature
+            var yAxisMin = minTemp - 1; // Start y-axis 1 degree below the minimum temperature
 
             // Create the chart
             var ctx = document.getElementById('tempChart').getContext('2d');
@@ -158,14 +186,39 @@
                                 text: 'Temperature (°C)'
                             },
                             beginAtZero: false, // Do not start at zero
-                            min: yAxisMin, // Start the y-axis 5 degrees below the minimum temperature
+                            min: yAxisMin, // Start the y-axis 1 degree below the minimum temperature
                             ticks: {
-                                stepSize: 1 // Increase y-axis values by 2
+                                stepSize: 0.5 // Increase y-axis values by 0.5
                             }
                         }
                     }
                 }
             });
+
+            // Snowfall Effect
+            var snowfalls = data.some(temp => temp < 20); // Check if any temperature is below 20°C
+            if (snowfalls) {
+                function createSnowflake() {
+                    const snowflake = document.createElement('i');
+                    snowflake.classList.add('fas', 'fa-snowflake', 'snowflake');
+                    snowflake.style.left = Math.random() * window.innerWidth + 'px';
+                    snowflake.style.animationDuration = Math.random() * 5 + 2 + 's'; // 2 to 7 seconds
+                    snowflake.style.opacity = Math.random();
+                    snowflake.style.fontSize = Math.random() * 10 + 10 + 'px'; // 10px to 20px
+
+                    // Randomize animation duration and start position
+                    snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    snowflake.style.animationDelay = Math.random() * 5 + 's';
+
+                    document.getElementById('snowflakes-container').appendChild(snowflake);
+
+                    setTimeout(() => {
+                        snowflake.remove();
+                    }, parseFloat(snowflake.style.animationDuration) * 1000); // Remove snowflake after animation ends
+                }
+
+                setInterval(createSnowflake, 200); // Create a snowflake every 200ms
+            }
         });
     </script>
 </body>
